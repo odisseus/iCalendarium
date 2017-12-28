@@ -1,4 +1,4 @@
-package example
+package catcal.domain
 
 case class FixedDay(
                      day: Int,

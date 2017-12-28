@@ -1,4 +1,4 @@
-package example
+package catcal
 
 import org.scalatest.{FlatSpec, Matchers}
 

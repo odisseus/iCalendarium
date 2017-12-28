@@ -1,4 +1,4 @@
-package example
+package catcal
 
 import com.typesafe.config.ConfigFactory
 

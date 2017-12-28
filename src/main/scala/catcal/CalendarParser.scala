@@ -1,4 +1,6 @@
-package example
+package catcal
+import catcal.domain.FixedDay
+
 import scala.util.parsing.combinator.{PackratParsers, Parsers, RegexParsers}
 
 class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParsers with PackratParsers {
