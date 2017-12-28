@@ -1,5 +1,5 @@
 package catcal
-import catcal.domain.FixedDay
+import catcal.domain.{Event, EventDate, FixedDay}
 
 import scala.util.parsing.combinator.{PackratParsers, Parsers, RegexParsers}
 
@@ -18,9 +18,20 @@ class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParser
 
   private def fixedDay: Parser[FixedDay] = day ~ month ^^ (x => FixedDay(x._1, x._2))
 
+  private def eventDate: Parser[EventDate] = fixedDay
+
+  private def emptyLines: Parser[String] = "^\\s*$"
+
+  private def event: PackratParser[Event] = eventDate ~ """(?s).*""".r ^^ (x => Event(x._1, x._2))
+
   // temporary
   def parseFixedDay(str: String) = {
     parseAll(fixedDay, str)
+  }
+
+  // temporary
+  def parseEvent(str: String) = {
+    parseAll(event, str)
   }
 
 }
