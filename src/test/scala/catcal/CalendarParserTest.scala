@@ -1,12 +1,12 @@
 package catcal
 
-import catcal.domain.{Event, FixedDay}
-import org.scalatest.{FlatSpec, Matchers}
+import catcal.domain.{ Event, FixedDay }
+import org.scalatest.{ FlatSpec, Matchers }
 
-class CalendarParserTest extends FlatSpec with Matchers{
+class CalendarParserTest extends FlatSpec with Matchers {
   behavior of "CalendarParser"
 
-  val conf = new ParserConfiguration(months = Seq("січня", "квітня"))
+  val conf = ParserConfiguration(months = Seq("січня", "квітня"))
   val parser = new CalendarParser(conf)
 
   it should "parse fixed days" in {

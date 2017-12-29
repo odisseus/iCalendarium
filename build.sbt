@@ -1,4 +1,5 @@
 import Dependencies._
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 
 lazy val root = (project in file(".")).
   settings(
@@ -10,5 +11,13 @@ lazy val root = (project in file(".")).
     name := "Hello",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += hocon,
-    libraryDependencies += parsing
+    libraryDependencies += parsing,
+    ScalariformKeys.preferences := scalariformPreferences
 )
+
+import scalariform.formatter.preferences._
+
+lazy val scalariformPreferences = FormattingPreferences()
+  .setPreference(PreserveSpaceBeforeArguments, true)
+  .setPreference(AlignParameters, true)
+  .setPreference(AlignSingleLineCaseStatements, true)
