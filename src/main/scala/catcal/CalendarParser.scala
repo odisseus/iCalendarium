@@ -1,8 +1,10 @@
 package catcal
 import catcal.domain.{ Event, EventDate, FixedDay }
-import scala.util.parsing.combinator.{ PackratParsers, Parsers, RegexParsers }
+import scala.util.parsing.combinator.RegexParsers
 
-class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParsers with PackratParsers {
+class CalendarParser(conf: ParserConfiguration) extends RegexParsers {
+
+  // Do not mix RegexParsers with PackratParsers. See https://github.com/scala/bug/issues/8080
 
   override protected val whiteSpace = """[ \t]+""".r
 
@@ -23,14 +25,14 @@ class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParser
 
   private def newline = """(?s)\r?\n""".r
 
-  private def delimiter = newline ~ newline
+  private def delimiter = newline ~ (newline+)
 
   private def descriptionLine = newline ~> """\S.*""".r
 
-  private def event: PackratParser[Event] = eventDate ~ (descriptionLine +) ^^
+  private def event = eventDate ~ (descriptionLine +) ^^
     (x => Event(x._1, x._2.mkString("\n")))
 
-  private def eventList: PackratParser[List[Event]] = (newline*) ~> repsep(event, delimiter) <~ (newline*)
+  private def eventList = (newline*) ~> repsep(event, delimiter) <~ (newline*)
 
   // temporary
   def parseFixedDay(str: String) = {
@@ -45,6 +47,10 @@ class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParser
   // temporary
   def parseEventList(str: String) = {
     parseAll(eventList, str)
+  }
+
+  def parseEventList(in: java.io.Reader) = {
+    parse(eventList, in)
   }
 
 }
