@@ -4,6 +4,8 @@ import scala.util.parsing.combinator.{ PackratParsers, Parsers, RegexParsers }
 
 class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParsers with PackratParsers {
 
+  override protected val whiteSpace = """[ \t]+""".r
+
   private def int: Parser[Int] = "[0-9]+\\b".r ^^ (_.toInt)
 
   private def day = int ^? (
@@ -19,9 +21,16 @@ class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParser
 
   private def eventDate: Parser[EventDate] = fixedDay
 
-  private def emptyLines: Parser[String] = "^\\s*$"
+  private def newline = """(?s)\r?\n""".r
 
-  private def event: PackratParser[Event] = eventDate ~ """(?s).*""".r ^^ (x => Event(x._1, x._2))
+  private def delimiter = newline ~ newline
+
+  private def descriptionLine = newline ~> """\S.*""".r
+
+  private def event: PackratParser[Event] = eventDate ~ (descriptionLine +) ^^
+    (x => Event(x._1, x._2.mkString("\n")))
+
+  private def eventList: PackratParser[List[Event]] = (newline*) ~> repsep(event, delimiter) <~ (newline*)
 
   // temporary
   def parseFixedDay(str: String) = {
@@ -31,6 +40,11 @@ class CalendarParser(conf: ParserConfiguration) extends Parsers with RegexParser
   // temporary
   def parseEvent(str: String) = {
     parseAll(event, str)
+  }
+
+  // temporary
+  def parseEventList(str: String) = {
+    parseAll(eventList, str)
   }
 
 }

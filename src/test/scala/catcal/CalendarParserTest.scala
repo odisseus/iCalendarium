@@ -22,14 +22,28 @@ class CalendarParserTest extends FlatSpec with Matchers {
   }
 
   it should "parse fixed date events" in {
-    val goodEvent =
-      """
-        |1 січня
-        |Новий Рік
-        |Іменини Григорія""".stripMargin
+    val goodEvent = "1 січня\nНовий Рік\nСв. мч. Боніфатія."
     parser.parseEvent(goodEvent).get shouldBe Event(
       FixedDay(1, "січня"),
-      "Новий Рік\nІменини Григорія"
+      "Новий Рік\nСв. мч. Боніфатія."
+    )
+  }
+
+  it should "parse lists of fixed date events" in {
+    val goodList =
+      """
+        |
+        |1 січня
+        |Новий Рік
+        |Св. мч. Боніфатія.
+        |
+        |2 квітня
+        |Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави.
+        |
+        |""".stripMargin
+    parser.parseEventList(goodList).get shouldBe List(
+      Event(FixedDay(1, "січня"), "Новий Рік\nСв. мч. Боніфатія."),
+      Event(FixedDay(2, "квітня"), "Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави.")
     )
   }
 
