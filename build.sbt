@@ -17,6 +17,8 @@ lazy val root = (project in file(".")).
 
 import scalariform.formatter.preferences._
 
+scalariformSettings
+
 lazy val scalariformPreferences = FormattingPreferences()
   .setPreference(PreserveSpaceBeforeArguments, true)
   .setPreference(AlignParameters, true)
