@@ -12,6 +12,7 @@ lazy val root = (project in file(".")).
     libraryDependencies += scalaTest % Test,
     libraryDependencies += hocon,
     libraryDependencies += parsing,
+    libraryDependencies += jodatime,
     ScalariformKeys.preferences := scalariformPreferences
 )
 
