@@ -1,5 +1,6 @@
 package catcal
-import catcal.domain.{ Event, EventDate, FixedDay }
+import catcal.domain.{ Event, EventDate, FixedDay, Movable }
+
 import scala.util.parsing.combinator.RegexParsers
 
 class CalendarParser(conf: ParserConfiguration) extends RegexParsers {
@@ -15,21 +16,31 @@ class CalendarParser(conf: ParserConfiguration) extends RegexParsers {
     { bad: Int => s"Invalid day: $bad" }
   )
 
-  private def month = "\\S+".r ^? {
-    case str if conf.months.contains(str) => str
-  }
+  private def oneOf(list: Seq[String]): Parser[String] = ("\\S+".r).filter(list.contains(_))
+
+  private def month = oneOf(conf.months)
+
+  private def weekday = oneOf(conf.weekdays)
 
   private def fixedDay: Parser[FixedDay] = day ~ month ^^ (x => FixedDay(x._1, x._2))
 
-  private def eventDate: Parser[EventDate] = fixedDay
+  private def movable: Parser[Movable] = int ~ weekday ~ (conf.before | conf.after) ~ descriptionLine ^^ {
+    case ordinal ~ day ~ direction ~ reference => Movable(
+      if (direction == conf.before) -ordinal else ordinal,
+      day,
+      reference
+    )
+  }
+
+  private def eventDate: Parser[EventDate] = fixedDay | movable
 
   private def newline = """(?s)\r?\n""".r
 
   private def delimiter = newline ~ (newline+)
 
-  private def descriptionLine = newline ~> """\S.*""".r
+  private def descriptionLine = """\S.*""".r
 
-  private def event = eventDate ~ (descriptionLine +) ^^
+  private def event = eventDate ~ ((newline ~> descriptionLine) +) ^^
     (x => Event(x._1, x._2.mkString("\n")))
 
   private def eventList = (newline*) ~> repsep(event, delimiter) <~ (newline*)
@@ -37,6 +48,11 @@ class CalendarParser(conf: ParserConfiguration) extends RegexParsers {
   // temporary
   def parseFixedDay(str: String) = {
     parseAll(fixedDay, str)
+  }
+
+  // temporary
+  def parseMovable(str: String) = {
+    parseAll(movable, str)
   }
 
   // temporary

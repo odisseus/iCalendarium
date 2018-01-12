@@ -6,7 +6,12 @@ import scala.io.Source
 class EventImporterTest extends FlatSpec with Matchers {
   behavior of "EventImporter"
 
-  val conf = ParserConfiguration(months = Seq("січня", "березня", "квітня"))
+  val conf = ParserConfiguration(
+    months = Seq("січня", "березня", "квітня"),
+    weekdays = Seq("вівторок", "п'ятниця"),
+    before = "перед",
+    after = "після"
+  )
   val parser = new CalendarParser(conf)
 
   val eventImporter = new EventImporter(parser)
