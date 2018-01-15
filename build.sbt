@@ -13,6 +13,7 @@ lazy val root = (project in file(".")).
     libraryDependencies += hocon,
     libraryDependencies += parsing,
     libraryDependencies += jodatime,
+    libraryDependencies += icalendar,
     ScalariformKeys.preferences := scalariformPreferences
 )
 
