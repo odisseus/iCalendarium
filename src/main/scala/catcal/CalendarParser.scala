@@ -1,5 +1,7 @@
 package catcal
+
 import catcal.domain.{ Event, EventDate, FixedDay, Movable }
+import org.joda.time.MonthDay
 
 import scala.util.parsing.combinator.RegexParsers
 
@@ -16,13 +18,15 @@ class CalendarParser(conf: ParserConfiguration) extends RegexParsers {
     { bad: Int => s"Invalid day: $bad" }
   )
 
-  private def oneOf(list: Seq[String]): Parser[String] = ("\\S+".r).filter(list.contains(_))
+  private def indexFrom(list: Seq[String]): Parser[Int] = ("\\S+".r) ^? {
+    list.zipWithIndex.toMap
+  }
 
-  private def month = oneOf(conf.months)
+  private def month = indexFrom(conf.months) ^^ { _ + 1 }
 
-  private def weekday = oneOf(conf.weekdays)
+  private def weekday = indexFrom(conf.weekdays) ^^ { _ + 1 }
 
-  private def fixedDay: Parser[FixedDay] = day ~ month ^^ (x => FixedDay(x._1, x._2))
+  private def fixedDay: Parser[FixedDay] = day ~ month ^^ (x => FixedDay(new MonthDay(x._2, x._1)))
 
   private def movable: Parser[Movable] = int ~ weekday ~ (conf.before | conf.after) ~ descriptionLine ^^ {
     case ordinal ~ day ~ direction ~ reference => Movable(
