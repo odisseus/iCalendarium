@@ -1,7 +1,9 @@
-package catcal
+package catcal.service
 
 import java.io.{ File, FileReader, Reader }
+
 import catcal.domain.Event
+
 import scala.util.Try
 
 class EventImporter(

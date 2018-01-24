@@ -1,6 +1,8 @@
-package catcal
+package catcal.service
 
+import catcal.domain.ParserConfiguration
 import org.scalatest.{ FlatSpec, Matchers }
+
 import scala.io.Source
 
 class EventImporterTest extends FlatSpec with Matchers {

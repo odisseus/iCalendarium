@@ -1,6 +1,6 @@
-package catcal
+package catcal.service
 
-import org.joda.time.{ DateTime, DateTimeConstants, LocalDate }
+import org.joda.time.DateTimeConstants
 import org.scalatest.{ FlatSpec, Matchers }
 
 class EasterDateProviderTest extends FlatSpec with Matchers {

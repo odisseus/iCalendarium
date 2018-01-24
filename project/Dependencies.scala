@@ -6,5 +6,5 @@ object Dependencies {
   lazy val parsing = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
   lazy val jodatime = "joda-time" % "joda-time" % "2.9.9"
   lazy val icalendar = "net.sf.biweekly" % "biweekly" % "0.6.1"
-
+  lazy val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0"
 }

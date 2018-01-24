@@ -1,4 +1,4 @@
-package catcal
+package catcal.service
 
 import catcal.domain.{ Event, FixedDay, Movable, ResolvedEvent }
 

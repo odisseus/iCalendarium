@@ -8,12 +8,13 @@ lazy val root = (project in file(".")).
       scalaVersion := "2.12.4",
       version      := "0.1.0-SNAPSHOT"
     )),
-    name := "Hello",
+    name := "CatCal",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += hocon,
     libraryDependencies += parsing,
     libraryDependencies += jodatime,
     libraryDependencies += icalendar,
+    libraryDependencies += macwire % Provided,
     ScalariformKeys.preferences := scalariformPreferences
 )
 

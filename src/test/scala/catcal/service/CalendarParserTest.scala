@@ -1,6 +1,6 @@
-package catcal
+package catcal.service
 
-import catcal.domain.{ Event, FixedDay, Movable }
+import catcal.domain.{ Event, FixedDay, Movable, ParserConfiguration }
 import org.joda.time.DateTimeConstants._
 import org.scalatest.{ FlatSpec, Matchers }
 

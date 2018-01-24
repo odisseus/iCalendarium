@@ -1,4 +1,4 @@
-package catcal
+package catcal.service
 
 import org.joda.time.LocalDate
 

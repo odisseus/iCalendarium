@@ -1,6 +1,6 @@
-package catcal
+package catcal.service
 
-import catcal.domain.{ Event, EventDate, FixedDay, Movable }
+import catcal.domain._
 import org.joda.time.MonthDay
 
 import scala.util.parsing.combinator.RegexParsers

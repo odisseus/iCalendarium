@@ -1,8 +1,8 @@
-package catcal
+package catcal.service
 
-import org.scalatest.{ FlatSpec, Matchers }
 import org.joda.time.DateTimeConstants._
 import org.joda.time.LocalDate
+import org.scalatest.{ FlatSpec, Matchers }
 
 class DateCalculatorTest extends FlatSpec with Matchers {
   behavior of "DateCalculator"

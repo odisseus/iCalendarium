@@ -1,4 +1,4 @@
-package catcal
+package catcal.service
 
 import biweekly.ICalendar
 import biweekly.component.VEvent
