@@ -1,9 +1,7 @@
 package catcal.service
 
-import java.io.{ File, FileReader, Reader }
-
+import java.io._
 import catcal.domain.Event
-
 import scala.util.Try
 
 class EventImporter(
@@ -13,13 +11,23 @@ class EventImporter(
     parser.parseEventList(reader).get
   }
 
-  def read(file: File): Try[List[Event]] = {
-    val reader = Try(new FileReader(file))
+  def read(inputStream: InputStream): Try[List[Event]] = {
+    val reader = Try(new InputStreamReader(inputStream))
     reader.flatMap { in =>
       try
         read(in)
       finally
         in.close()
+    }
+  }
+
+  def read(file: File): Try[List[Event]] = {
+    val inputStream = Try(new FileInputStream(file))
+    inputStream.flatMap { is =>
+      try
+        read(is)
+      finally
+        is.close()
     }
   }
 
