@@ -14,6 +14,6 @@ object ParserConfiguration {
     months = config.getStringList("months").asScala,
     weekdays = config.getStringList("weekdays").asScala,
     before = config.getString("before"),
-    after = config.getString("after"),
+    after = config.getString("after")
   )
 }

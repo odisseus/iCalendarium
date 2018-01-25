@@ -7,6 +7,7 @@ class EventResolver(
     currentYear: Int,
     knownEvents: Iterable[Event]) {
 
+  //FIXME make this method private
   //FIXME rewrite to tail recursion and use memoization
   def resolveEvent(event: Event): ResolvedEvent = event.eventDate match {
     case FixedDay(monthDay) => ResolvedEvent(
@@ -22,6 +23,10 @@ class EventResolver(
         description = event.description
       )
     }
+  }
+
+  def resolveAll(): Iterable[ResolvedEvent] = {
+    knownEvents.map(resolveEvent)
   }
 
   private def find(reference: String) = {
