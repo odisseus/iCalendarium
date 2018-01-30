@@ -8,7 +8,9 @@ class EventImporter(
     parser: CalendarParser) {
 
   def read(reader: Reader): Try[List[Event]] = Try {
-    parser.parseEventList(reader).get
+    val (good, bad) = parser.parseEventList(reader).right.get
+    bad.map(_.message).foreach(println)
+    good
   }
 
   def read(inputStream: InputStream): Try[List[Event]] = {

@@ -1,10 +1,13 @@
 package catcal.service
 
-import catcal.domain.{ Event, FixedDay, Movable, ParserConfiguration }
-import org.joda.time.DateTimeConstants._
-import org.scalatest.{ FlatSpec, Matchers }
+import java.io.StringReader
 
-class CalendarParserTest extends FlatSpec with Matchers {
+import catcal.domain.Errors.ParserError
+import catcal.domain.{ Event, FixedDay, Movable, ParserConfiguration }
+import org.joda.time.DateTimeConstants.MONDAY
+import org.scalatest.{ EitherValues, FlatSpec, LoneElement, Matchers }
+
+class CalendarParserTest extends FlatSpec with Matchers with EitherValues with LoneElement {
   behavior of "CalendarParser"
 
   val conf = ParserConfiguration(
@@ -13,39 +16,8 @@ class CalendarParserTest extends FlatSpec with Matchers {
     before = "перед",
     after = "після"
   )
-  val parser = new CalendarParser(conf)
 
-  it should "parse fixed days" in {
-    parser.parseFixedDay("28 січня").get shouldBe FixedDay("--01-28")
-    parser.parseFixedDay("8\tквітня").get shouldBe FixedDay("--04-08")
-    parser.parseFixedDay("08 квітня").get shouldBe FixedDay("--04-08")
-    parser.parseFixedDay("028 січня").get shouldBe FixedDay("--01-28")
-    parser.parseFixedDay("8 fooo") shouldBe 'empty
-    parser.parseFixedDay("38 січня") shouldBe 'empty
-    parser.parseFixedDay("28січня") shouldBe 'empty
-    parser.parseFixedDay("28") shouldBe 'empty
-    parser.parseFixedDay("січня") shouldBe 'empty
-  }
-
-  it should "parse fixed date events" in {
-    val event = "1 січня\nНовий Рік\nСв. мч. Боніфатія."
-    parser.parseEvent(event).get shouldBe Event(
-      FixedDay("--01-01"),
-      "Новий Рік\nСв. мч. Боніфатія."
-    )
-  }
-
-  it should "parse movable references" in {
-    parser.parseMovable("9 п'ятниця перед Новий Рік").get shouldBe Movable(-9, FRIDAY, "Новий Рік")
-  }
-
-  it should "parse movable events" in {
-    val event = "1 понеділок після Пасха\nСвітлий Понеділок.\nОбливаний понеділок."
-    parser.parseEvent(event).get shouldBe Event(
-      Movable(1, MONDAY, "Пасха"),
-      "Світлий Понеділок.\nОбливаний понеділок."
-    )
-  }
+  val parser = new CalendarParser(new EventParser(conf))
 
   it should "parse lists of fixed date and movable events" in {
     val goodList =
@@ -58,15 +30,19 @@ class CalendarParserTest extends FlatSpec with Matchers {
         |2 квітня
         |Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави.
         |
+        |foobar
+        |
         |7 понеділок перед Пасха
         |Початок Великого посту.
         |
         |""".stripMargin
-    parser.parseEventList(goodList).get shouldBe List(
+    val result = parser.parseEventList(new StringReader(goodList)).right.value
+    result._1 shouldBe List(
       Event(FixedDay("--01-01"), "Новий Рік\nСв. мч. Боніфатія."),
       Event(FixedDay("--04-02"), "Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави."),
       Event(Movable(-7, MONDAY, "Пасха"), "Початок Великого посту.")
     )
+    result._2.loneElement shouldBe a[ParserError]
   }
 
 }
