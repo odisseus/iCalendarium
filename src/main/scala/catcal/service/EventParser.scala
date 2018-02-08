@@ -5,7 +5,9 @@ import org.joda.time.MonthDay
 import Errors.ParserError
 import scala.util.parsing.combinator.RegexParsers
 
-class EventParser(conf: ParserConfiguration) extends RegexParsers {
+trait EventParser extends RegexParsers {
+
+  val conf: ParserConfiguration
 
   // Do not mix RegexParsers with PackratParsers. See https://github.com/scala/bug/issues/8080
 
@@ -36,14 +38,13 @@ class EventParser(conf: ParserConfiguration) extends RegexParsers {
     )
   }
 
-  private def eventDate: Parser[EventDate] = fixedDay | movable
+  protected def eventDate: Parser[EventDate] = fixedDay | movable
 
-  private def newline = """(?s)\r?\n""".r
+  protected def newline = """(?s)\r?\n""".r
 
-  private def descriptionLine = """\S.*""".r
+  protected def descriptionLine = """\S.*""".r
 
-  private def event = eventDate ~ ((newline ~> descriptionLine) +) ^^
-    (x => Event(x._1, x._2.mkString("\n")))
+  protected def event: Parser[Event]
 
   // temporary
   def parseFixedDay(str: String) = {
@@ -58,8 +59,26 @@ class EventParser(conf: ParserConfiguration) extends RegexParsers {
   def parseEvent(str: String): Either[ParserError, Event] = {
     parseAll(event, str) match {
       case Success(ev, _) => Right(ev)
-      case NoSuccess(msg, x) => Left(ParserError(str))
+      case NoSuccess(msg, _) => Left(ParserError(msg))
     }
+  }
+
+}
+
+object EventParser {
+
+  def withDatesAtBeginning(configuration: ParserConfiguration) = new EventParser {
+    override val conf: ParserConfiguration = configuration
+
+    override def event: Parser[Event] = eventDate ~ ((newline ~> descriptionLine) +) ^^
+      (x => Event(x._1, x._2.mkString("\n")))
+  }
+
+  def withDatesAtEnd(configuration: ParserConfiguration) = new EventParser {
+    override val conf: ParserConfiguration = configuration
+
+    override def event: Parser[Event] = ((descriptionLine <~ newline) +) ~ eventDate ^^
+      (x => Event(x._2, x._1.mkString("\n")))
   }
 
 }

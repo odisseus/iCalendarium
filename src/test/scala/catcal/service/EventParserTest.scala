@@ -13,7 +13,7 @@ class EventParserTest extends FlatSpec with Matchers with EitherValues {
     before = "перед",
     after = "після"
   )
-  val parser = new EventParser(conf)
+  val parser = EventParser.withDatesAtBeginning(conf)
 
   it should "parse fixed days" in {
     parser.parseFixedDay("28 січня").get shouldBe FixedDay("--01-28")

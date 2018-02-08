@@ -14,7 +14,7 @@ class EventImporterTest extends FlatSpec with Matchers {
     before = "перед",
     after = "після"
   )
-  val parser = new CalendarParser(new EventParser(conf))
+  val parser = new CalendarParser(EventParser.withDatesAtBeginning(conf))
 
   val eventImporter = new EventImporter(parser)
 

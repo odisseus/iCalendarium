@@ -17,32 +17,32 @@ class CalendarParserTest extends FlatSpec with Matchers with EitherValues with L
     after = "після"
   )
 
-  val parser = new CalendarParser(new EventParser(conf))
+  val parser = new CalendarParser(EventParser.withDatesAtEnd(conf))
 
   it should "parse lists of fixed date and movable events" in {
-    val goodList =
+    val eventList =
       """
         |
-        |1 січня
         |Новий Рік
         |Св. мч. Боніфатія.
+        |1 січня
         |
-        |2 квітня
         |Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави.
+        |2 квітня
         |
         |foobar
         |
-        |7 понеділок перед Пасха
         |Початок Великого посту.
+        |7 понеділок перед Пасха
         |
         |""".stripMargin
-    val result = parser.parseEventList(new StringReader(goodList)).right.value
-    result._1 shouldBe List(
+    val (parsed, failed) = parser.parseEventList(new StringReader(eventList)).right.value
+    parsed shouldBe List(
       Event(FixedDay("--01-01"), "Новий Рік\nСв. мч. Боніфатія."),
       Event(FixedDay("--04-02"), "Прпп. Отців мчч. убитих сарацинами в монастирі св. Сави."),
       Event(Movable(-7, MONDAY, "Пасха"), "Початок Великого посту.")
     )
-    result._2.loneElement shouldBe a[ParserError]
+    failed.loneElement shouldBe a[ParserError]
   }
 
 }

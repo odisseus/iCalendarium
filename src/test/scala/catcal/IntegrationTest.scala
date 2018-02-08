@@ -24,7 +24,7 @@ class IntegrationTest extends FlatSpec with Matchers {
   it should "convert a list of fixed days events to iCalendar" in new TestCore {
     val imported = eventImporter.read(fixedDays()).get
     val resolver = eventResolver(currentYear, imported)
-    val resolved = imported.map(resolver.resolveEvent)
+    val resolved = resolver.resolveAll()
     val exported = eventExporter.toICalendar(resolved)
     val events = exported.getEvents.asScala
     //exported.write(System.out)

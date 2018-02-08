@@ -10,7 +10,7 @@ trait Core {
 
   def eventsConfiguration: EventsConfiguration
 
-  lazy val eventParser = wire[EventParser]
+  lazy val eventParser: EventParser = wireWith(EventParser.withDatesAtBeginning _)
 
   lazy val calendarParser = wire[CalendarParser]
 
