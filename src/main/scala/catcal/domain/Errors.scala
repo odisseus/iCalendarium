@@ -16,4 +16,8 @@ object Errors {
 
   case class TokenizerError(message: String) extends Error
 
+  case class ResolverError(message: String) extends Error
+
+  case class DateCalculatorError(message: String) extends Error
+
 }
