@@ -3,6 +3,7 @@ package catcal
 import java.io.{ InputStream, SequenceInputStream }
 
 import catcal.domain.{ EventsConfiguration, ParserConfiguration }
+import catcal.service.EventParser
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{ FlatSpec, Matchers }
 
@@ -19,6 +20,8 @@ class IntegrationTest extends FlatSpec with Matchers {
     override def parserConfiguration = ParserConfiguration(config)
 
     override def eventsConfiguration = EventsConfiguration(config)
+
+    override lazy val eventParser: EventParser = EventParser.withDatesAtBeginning(parserConfiguration)
   }
 
   it should "convert a list of fixed days events to iCalendar" in new TestCore {
