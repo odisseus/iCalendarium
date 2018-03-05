@@ -59,7 +59,7 @@ trait EventParser extends RegexParsers {
   def parseEvent(str: String): Either[ParserError, Event] = {
     parseAll(event, str) match {
       case Success(ev, _) => Right(ev)
-      case NoSuccess(msg, _) => Left(ParserError(msg))
+      case NoSuccess(msg, next) => Left(ParserError(msg, str, next))
     }
   }
 

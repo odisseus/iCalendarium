@@ -1,5 +1,7 @@
 package catcal.domain
 
+import scala.util.parsing.input.Reader
+
 object Errors {
 
   sealed abstract trait Error {
@@ -10,8 +12,12 @@ object Errors {
 
   }
 
-  case class ParserError(input: String) extends Error {
-    override val message: String = s"Failed to parse: $input"
+  case class ParserError(msg: String, input: String, next: Reader[_]) extends Error {
+    override val message: String =
+      s"""
+         |Parser failure at line ${next.pos.line}, column ${next.pos.column}: $msg
+         |${next.pos.longString}
+       """.stripMargin
   }
 
   case class TokenizerError(message: String) extends Error
