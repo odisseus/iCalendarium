@@ -28,7 +28,7 @@ trait EventDateParser { self: RegexParsers =>
 
   private def fixedDay: Parser[FixedDay] = day ~ month ^^ (x => FixedDay(new MonthDay(x._2, x._1)))
 
-  private def descriptionLine = """\S.*""".r
+  private def descriptionLine = """\S(.*\S)?""".r
 
   private def movable: Parser[Movable] = int ~ weekday ~ (conf.before | conf.after) ~ descriptionLine ^^ {
     case ordinal ~ day ~ direction ~ reference => Movable(

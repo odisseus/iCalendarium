@@ -53,4 +53,14 @@ class LexerTest extends FlatSpec with Matchers with EitherValues {
     parser.parseProgram("").right.value shouldBe Nil
   }
 
+  it should "trim whitespace" in {
+    val input = "    1 понеділок після Пасха   \n  # Світлий Понеділок.   \n   Обливаний понеділок. "
+    parser.parseProgram(input).right.value shouldBe List(
+      DateLine(Movable(1, 1, "Пасха")),
+      Newline,
+      Newline,
+      TextLine("Обливаний понеділок.")
+    )
+  }
+
 }

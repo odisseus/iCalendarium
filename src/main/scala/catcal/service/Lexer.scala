@@ -14,7 +14,7 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
 
   def newline: Parser[Token] = """(?s)\r?\n""".r ^^^ Newline
 
-  def textLine: Parser[Token] = """\S.*""".r ^^ TextLine.apply
+  def textLine: Parser[Token] = """\S(.*\S)?""".r ^^ TextLine.apply
 
   def dateLine: Parser[Token] = (eventDate) ^^ DateLine.apply
 
