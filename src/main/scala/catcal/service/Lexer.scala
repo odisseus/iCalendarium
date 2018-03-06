@@ -10,7 +10,7 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
 
   override protected val whiteSpace = """[ \t]+""".r
 
-  def comment: Parser[Token] = "#.*".r ^^^ Comment
+  def comment: Parser[Unit] = "#.*".r ^^^ ()
 
   def newline: Parser[Token] = """(?s)\r?\n""".r ^^^ Newline
 
@@ -18,7 +18,9 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
 
   def dateLine: Parser[Token] = (eventDate) ^^ DateLine.apply
 
-  def program: Parser[List[Token]] = phrase(rep(comment | newline | dateLine | textLine))
+  def program: Parser[List[Token]] = phrase(
+    (comment ?) ~> repsep(newline | dateLine | textLine, (comment ?)) <~ (comment ?)
+  )
 
   def parseProgram(str: String): Either[ParserError, List[Token]] = {
     parseAll(program, str) match {
@@ -32,7 +34,6 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
 object Lexer {
   sealed trait Token
 
-  case object Comment extends Token
   case object Newline extends Token
   case class DateLine(date: EventDate) extends Token
   case class TextLine(text: String) extends Token
