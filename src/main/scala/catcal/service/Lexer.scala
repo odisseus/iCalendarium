@@ -1,11 +1,12 @@
 package catcal.service
 
 import catcal.domain.Errors.ParserError
-import catcal.service.LowLevelParser._
+import catcal.domain.{ EventDate, ParserConfiguration }
+import catcal.service.Lexer._
 
 import scala.util.parsing.combinator.RegexParsers
 
-class LowLevelParser extends RegexParsers {
+class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDateParser {
 
   override protected val whiteSpace = """[ \t]+""".r
 
@@ -15,7 +16,9 @@ class LowLevelParser extends RegexParsers {
 
   def textLine: Parser[Token] = """\S.*""".r ^^ TextLine.apply
 
-  def program: Parser[List[Token]] = phrase(rep(comment | newline | textLine))
+  def dateLine: Parser[Token] = (eventDate) ^^ DateLine.apply
+
+  def program: Parser[List[Token]] = phrase(rep(comment | newline | dateLine | textLine))
 
   def parseProgram(str: String): Either[ParserError, List[Token]] = {
     parseAll(program, str) match {
@@ -26,10 +29,11 @@ class LowLevelParser extends RegexParsers {
 
 }
 
-object LowLevelParser {
+object Lexer {
   sealed trait Token
 
   case object Comment extends Token
   case object Newline extends Token
+  case class DateLine(date: EventDate) extends Token
   case class TextLine(text: String) extends Token
 }
