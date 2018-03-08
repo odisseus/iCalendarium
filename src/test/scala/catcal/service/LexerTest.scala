@@ -17,10 +17,10 @@ class LexerTest extends FlatSpec with Matchers with EitherValues {
   val parser = new Lexer(conf)
 
   it should "parse text lines" in {
-    val input = "понеділок після Пасха\nСвітлий Понеділок.\nОбливаний понеділок."
+    val input = "понеділок після Пасха\n\nСвітлий Понеділок.\nОбливаний понеділок."
     parser.parseProgram(input).right.value shouldBe List(
       TextLine("понеділок після Пасха"),
-      Newline,
+      Separator,
       TextLine("Світлий Понеділок."),
       Newline,
       TextLine("Обливаний понеділок.")
@@ -31,21 +31,17 @@ class LexerTest extends FlatSpec with Matchers with EitherValues {
     val input = "1 понеділок після Пасха\n\n#Обливаний понеділок."
     parser.parseProgram(input).right.value shouldBe List(
       DateLine(Movable(1, 1, "Пасха")),
-      Newline,
-      Newline
+      Separator
     )
   }
 
   it should "handle newlines in the beginning and end" in {
     val input = "\r\n\n1 понеділок після Пасха\n\n#Обливаний понеділок.\n\r\n"
     parser.parseProgram(input).right.value shouldBe List(
-      Newline,
-      Newline,
+      Separator,
       DateLine(Movable(1, 1, "Пасха")),
-      Newline,
-      Newline,
-      Newline,
-      Newline
+      Separator,
+      Separator
     )
   }
 
@@ -57,8 +53,7 @@ class LexerTest extends FlatSpec with Matchers with EitherValues {
     val input = "    1 понеділок після Пасха   \n  # Світлий Понеділок.   \n   Обливаний понеділок. "
     parser.parseProgram(input).right.value shouldBe List(
       DateLine(Movable(1, 1, "Пасха")),
-      Newline,
-      Newline,
+      Separator,
       TextLine("Обливаний понеділок.")
     )
   }

@@ -14,12 +14,14 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
 
   def newline: Parser[Token] = """(?s)\r?\n""".r ^^^ Newline
 
+  def separator: Parser[Token] = (newline ~ (comment ?) ~ newline) ^^^ Separator
+
   def textLine: Parser[Token] = """\S(.*\S)?""".r ^^ TextLine.apply
 
   def dateLine: Parser[Token] = (eventDate) ^^ DateLine.apply
 
   def program: Parser[List[Token]] = phrase(
-    (comment ?) ~> repsep(newline | dateLine | textLine, (comment ?)) <~ (comment ?)
+    (comment ?) ~> repsep(separator | newline | dateLine | textLine, (comment ?)) <~ (comment ?)
   )
 
   def parseProgram(str: String): Either[ParserError, List[Token]] = {
@@ -35,6 +37,7 @@ object Lexer {
   sealed trait Token
 
   case object Newline extends Token
+  case object Separator extends Token
   case class DateLine(date: EventDate) extends Token
   case class TextLine(text: String) extends Token
 }
