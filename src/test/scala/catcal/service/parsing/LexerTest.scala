@@ -1,8 +1,8 @@
-package catcal.service
+package catcal.service.parsing
 
-import org.scalatest.{ EitherValues, FlatSpec, Matchers }
-import Lexer._
 import catcal.domain.{ Movable, ParserConfiguration }
+import catcal.service.parsing.Lexer._
+import org.scalatest.{ EitherValues, FlatSpec, Matchers }
 
 class LexerTest extends FlatSpec with Matchers with EitherValues {
   behavior of "Lexer"

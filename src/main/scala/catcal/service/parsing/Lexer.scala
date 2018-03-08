@@ -1,9 +1,9 @@
-package catcal.service
+package catcal.service.parsing
 
 import catcal.domain.Errors.ParserError
 import catcal.domain.{ EventDate, ParserConfiguration }
-import catcal.service.Lexer._
-
+import catcal.service.EventDateParser
+import catcal.service.parsing.Lexer._
 import scala.util.parsing.combinator.RegexParsers
 
 class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDateParser {
