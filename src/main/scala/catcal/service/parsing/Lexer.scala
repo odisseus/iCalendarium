@@ -24,11 +24,17 @@ class Lexer(val conf: ParserConfiguration) extends RegexParsers with EventDatePa
     (comment ?) ~> repsep(separator | newline | dateLine | textLine, (comment ?)) <~ (comment ?)
   )
 
+  private def toEither(result: ParseResult[List[Token]]) = result match {
+    case Success(ev, _) => Right(ev)
+    case NoSuccess(msg, next) => Left(ParserError(msg, "", next))
+  }
+
   def parseProgram(str: String): Either[ParserError, List[Token]] = {
-    parseAll(program, str) match {
-      case Success(ev, _) => Right(ev)
-      case NoSuccess(msg, next) => Left(ParserError(msg, str, next))
-    }
+    toEither(parseAll(program, str))
+  }
+
+  def parseProgram(rdr: java.io.Reader): Either[ParserError, List[Token]] = {
+    toEither(parseAll(program, rdr))
   }
 
 }

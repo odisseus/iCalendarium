@@ -62,6 +62,7 @@ class TokenParserTest extends FlatSpec with Matchers with LoneElement with Eithe
       Newline,
       TextLine("Св. мч. Боніфатія."),
       Separator,
+      Newline,
       TextLine("Світлий Понеділок."),
       Newline,
       TextLine("Обливаний понеділок.")

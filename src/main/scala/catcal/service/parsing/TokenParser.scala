@@ -36,7 +36,7 @@ sealed trait TokenParser extends Parsers {
   private def separator: Parser[Unit] = Separator ^^^ ()
 
   private def program: Parser[BlockList] = phrase(
-    ((newline | separator) *) ~> repsep(block, separator) <~ ((newline | separator) *)
+    ((newline | separator) *) ~> repsep(block, ((separator +) ~ (newline ?))) <~ ((newline | separator) *)
   )
 
   def parseTokens(tokens: List[Token]): Either[ParserError, BlockList] = {

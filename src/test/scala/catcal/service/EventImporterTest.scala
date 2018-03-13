@@ -1,6 +1,7 @@
 package catcal.service
 
 import catcal.domain.ParserConfiguration
+import catcal.service.parsing.{ Lexer, TokenParser }
 import org.scalatest.{ FlatSpec, Matchers }
 
 import scala.io.Source
@@ -14,7 +15,7 @@ class EventImporterTest extends FlatSpec with Matchers {
     before = "перед",
     after = "після"
   )
-  val parser = new CalendarParser(EventParser.withDatesAtBeginning(conf))
+  val parser = new CalendarParser(new Lexer(conf), TokenParser.withDatesAtBeginning)
 
   val eventImporter = new EventImporter(parser)
 

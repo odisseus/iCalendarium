@@ -2,6 +2,7 @@ package catcal
 
 import catcal.domain.{ Event, EventsConfiguration, ParserConfiguration }
 import catcal.service._
+import catcal.service.parsing._
 
 trait Core {
   import com.softwaremill.macwire._
@@ -10,7 +11,9 @@ trait Core {
 
   def eventsConfiguration: EventsConfiguration
 
-  lazy val eventParser: EventParser = wireWith(EventParser.withDatesAtEnd _)
+  lazy val tokenParser: TokenParser = TokenParser.withDatesAtEnd
+
+  lazy val lexer: Lexer = wire[Lexer]
 
   lazy val calendarParser = wire[CalendarParser]
 
