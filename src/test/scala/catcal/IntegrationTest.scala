@@ -25,24 +25,27 @@ class IntegrationTest extends FlatSpec with Matchers {
   }
 
   it should "convert a list of fixed days events to iCalendar" in new TestCore {
-    val imported = eventImporter.read(fixedDays()).get
+    val (imported, importErrors) = eventImporter.read(fixedDays()).get
     val resolver = eventResolver(currentYear, imported)
     val resolved = resolver.resolveAll()
-    val exported = eventExporter.toICalendar(resolved)
+    val exported = eventExporter.toICalendar(resolved._1)
     val events = exported.getEvents.asScala
     //exported.write(System.out)
     events should have size 7
+    importErrors shouldBe 'empty
   }
 
   it should "convert a list of fixed days, predefined and movable events to iCalendar" in new TestCore {
-    val imported1 = eventImporter.read(fixedDays()).get
-    val imported2 = eventImporter.read(movables()).get
+    val (imported1, importErrors1) = eventImporter.read(fixedDays()).get
+    val (imported2, importErrors2) = eventImporter.read(movables()).get
     val knownEvents = imported1 ++ imported2 ++ predefinedEvents(currentYear).events
     val resolved = eventResolver(currentYear, knownEvents).resolveAll()
-    val exported = eventExporter.toICalendar(resolved)
+    val exported = eventExporter.toICalendar(resolved._1)
     val events = exported.getEvents.asScala
     exported.write(System.out)
     events should have size 14
+    importErrors1 shouldBe 'empty
+    importErrors2 shouldBe 'empty
   }
 
   def fixedDays(): InputStream = getClass.getResourceAsStream("/fixed-days.txt")

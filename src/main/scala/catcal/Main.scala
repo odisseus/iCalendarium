@@ -14,8 +14,13 @@ object Main extends Core with App {
 
   val sourcesDirectory = new File(sourcesPath)
   val sourceFiles = sourcesDirectory.list().filter(_.endsWith(".txt")).map(x => sourcesDirectory.toPath.resolve(x).toString)
-  val events = sourceFiles.map(eventImporter.read).flatMap(_.get) ++ predefinedEvents(currentYear).events
-  val resolvedEvents = eventResolver(currentYear, events).resolveAll()
+  val importResults = sourceFiles.map(eventImporter.read(_).get)
+  val importedEvents = importResults.map(_._1).flatten
+  val importErrors = importResults.map(_._2).flatten
+  importErrors.foreach(println)
+  val events = importedEvents ++ predefinedEvents(currentYear).events
+  val (resolvedEvents, errors) = eventResolver(currentYear, events).resolveAll()
+  errors.foreach(println)
 
   val icalendar = eventExporter.toICalendar(resolvedEvents)
 

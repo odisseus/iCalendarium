@@ -21,8 +21,9 @@ class EventImporterTest extends FlatSpec with Matchers {
 
   it should "parse a valid event list from a reader" in {
     val x = Source.fromURL(getClass.getResource("/fixed-days.txt"))
-    val parsedList = eventImporter.read(x.reader())
-    parsedList.get.length shouldBe 7
+    val (parsedList, errors) = eventImporter.read(x.reader()).get
+    parsedList should have size 7
+    errors shouldBe 'empty
   }
 
 }

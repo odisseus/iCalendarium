@@ -29,9 +29,11 @@ class EventResolver(
     )
   }
 
-  def resolveAll(): Iterable[ResolvedEvent] = {
-    //TODO Do not swallow errors
-    knownEvents.map(resolveEvent).flatMap(_.toOption)
+  def resolveAll(): (Iterable[ResolvedEvent], Iterable[Error]) = {
+    val resolutionResults = knownEvents.map(resolveEvent).groupBy(_.isRight)
+    val good = resolutionResults.get(true).getOrElse(Seq.empty).map(_.right.get)
+    val bad = resolutionResults.get(false).getOrElse(Seq.empty).map(_.left.get)
+    (good, bad)
   }
 
   private def find(reference: String): Either[Error, Event] = {
