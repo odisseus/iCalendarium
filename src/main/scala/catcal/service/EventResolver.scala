@@ -1,7 +1,8 @@
 package catcal.service
 
 import catcal.domain.Errors.{ Error, ResolverError }
-import catcal.domain.{ Event, FixedDay, Movable, ResolvedEvent }
+import catcal.domain._
+import org.joda.time.LocalDate
 
 class EventResolver(
     dateCalculator: DateCalculator,
@@ -20,9 +21,8 @@ class EventResolver(
       case e: org.joda.time.IllegalFieldValueException => Left(ResolverError(e.getMessage))
     }
     case Movable(ordinal, weekday, reference) => for {
-      referencedEvent <- find(reference)
-      resolvedReference <- resolveEvent(referencedEvent)
-      date <- dateCalculator.calculateDate(ordinal, weekday, resolvedReference.date)
+      referencedDate <- resolveDate(reference)
+      date <- dateCalculator.calculateDate(ordinal, weekday, referencedDate)
     } yield ResolvedEvent(
       date = date,
       description = event.description
@@ -36,8 +36,19 @@ class EventResolver(
     (good, bad)
   }
 
-  private def find(reference: String): Either[Error, Event] = {
-    knownEvents.find(_.description.contains(reference)).toRight(left = ResolverError(reference))
+  private def resolveDate(reference: Reference): Either[Error, LocalDate] = {
+    reference match {
+      case EventReference(eventName) =>
+        for {
+          referencedEvent <- find(eventName)
+          resolvedReference <- resolveEvent(referencedEvent)
+        } yield resolvedReference.date
+      case FixedDayReference(monthDay) => Right(monthDay.toLocalDate(currentYear))
+    }
+  }
+
+  private def find(eventName: String): Either[Error, Event] = {
+    knownEvents.find(_.description.contains(eventName)).toRight(left = ResolverError(eventName))
   }
 
 }

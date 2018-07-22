@@ -34,7 +34,7 @@ trait EventDateParser { self: RegexParsers =>
     case ordinal ~ day ~ direction ~ reference => Movable(
       if (direction == conf.before) -ordinal else ordinal,
       day,
-      reference
+      EventReference(reference)
     )
   }
 

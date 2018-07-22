@@ -14,4 +14,4 @@ object FixedDay {
 case class Movable(
   ordinal: Int,
   weekday: Int,
-  reference: String) extends EventDate
+  reference: Reference) extends EventDate
